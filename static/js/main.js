@@ -39,4 +39,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Add event listeners for price option card clicks
+    const priceOptionCards = document.querySelectorAll('.price-option-card');
+    priceOptionCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('a')) {
+                const propertyId = this.dataset.propertyId;
+                const priceOptionId = this.dataset.priceOptionId;
+                window.location.href = `/discount_selection/${propertyId}/${priceOptionId}`;
+            }
+        });
+    });
 });

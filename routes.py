@@ -11,10 +11,20 @@ def property_selection():
     properties = Property.query.all()
     return render_template('property_selection.html', properties=properties)
 
-@app.route('/price_selection/<int:property_id>')
+@app.route('/price_selection/<int:property_id>', methods=['GET', 'POST'])
 def price_selection(property_id):
     property = Property.query.get_or_404(property_id)
     price_options = PriceOption.query.filter_by(property_id=property_id).all()
+
+    if request.method == 'POST':
+        name = request.form.get('name')
+        price_multiplier = float(request.form.get('price_multiplier'))
+        new_option = PriceOption(name=name, price_multiplier=price_multiplier, property=property)
+        db.session.add(new_option)
+        db.session.commit()
+        flash('New price option added successfully!', 'success')
+        return redirect(url_for('price_selection', property_id=property_id))
+
     return render_template('price_selection.html', property=property, price_options=price_options)
 
 @app.route('/discount_selection/<int:property_id>/<int:price_option_id>')
@@ -23,6 +33,13 @@ def discount_selection(property_id, price_option_id):
     price_option = PriceOption.query.get_or_404(price_option_id)
     discount_methods = DiscountMethod.query.all()
     return render_template('discount_selection.html', property=property, price_option=price_option, discount_methods=discount_methods)
+
+@app.route('/view_discounts/<int:property_id>/<int:price_option_id>')
+def view_discounts(property_id, price_option_id):
+    property = Property.query.get_or_404(property_id)
+    price_option = PriceOption.query.get_or_404(price_option_id)
+    discount_methods = DiscountMethod.query.all()
+    return render_template('view_discounts.html', property=property, price_option=price_option, discount_methods=discount_methods)
 
 @app.route('/final_price', methods=['POST'])
 def final_price():
@@ -80,12 +97,10 @@ def property_gallery(property_id):
 
 @app.route('/initialize_properties')
 def initialize_properties():
-    # Check if properties already exist
     if Property.query.count() > 0:
         flash('Properties have already been initialized.', 'info')
         return redirect(url_for('property_selection'))
 
-    # Add the three properties with correct image_url and additional details
     properties = [
         {"name": "Tropical Resort", "description": "Tropical resort with bicycle rentals", "image_url": "384207928.jpg", "base_price": 250, "bedrooms": 2, "bathrooms": 2.5, "area": 1500, "amenities": "Pool, Bicycle rentals"},
         {"name": "Luxury Villa", "description": "Luxury villa with private pool", "image_url": "387887682.jpg", "base_price": 500, "bedrooms": 4, "bathrooms": 3.5, "area": 3000, "amenities": "Private pool, Garden"},
@@ -98,7 +113,6 @@ def initialize_properties():
             setattr(new_property, key, value)
         db.session.add(new_property)
 
-        # Add gallery images for each property
         gallery_images = [
             GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_1.jpg", property=new_property),
             GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_2.jpg", property=new_property),
@@ -112,12 +126,10 @@ def initialize_properties():
 
 @app.route('/initialize_price_options_and_discounts')
 def initialize_price_options_and_discounts():
-    # Check if price options and discount methods already exist
     if PriceOption.query.count() > 0 or DiscountMethod.query.count() > 0:
         flash('Price options and discount methods have already been initialized.', 'info')
         return redirect(url_for('property_selection'))
 
-    # Add price options for each property
     properties = Property.query.all()
     price_options = [
         {'name': 'Standard', 'price_multiplier': 1.0},
@@ -130,7 +142,6 @@ def initialize_price_options_and_discounts():
             new_option = PriceOption(name=option['name'], price_multiplier=option['price_multiplier'], property=property)
             db.session.add(new_option)
 
-    # Add discount methods
     discount_methods = [
         {'name': 'No Discount', 'discount_percentage': 0},
         {'name': 'Early Bird', 'discount_percentage': 10},

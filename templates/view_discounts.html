@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}View Discounts{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Discounts for {{ property.name }} - {{ price_option.name }}</h2>
+
+<div class="row">
+    {% for discount in discount_methods %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ discount.name }}</h5>
+                <p class="card-text">Discount: {{ discount.discount_percentage }}%</p>
+                <p class="card-text">
+                    Original Price: ${{ "%.2f"|format(property.base_price * price_option.price_multiplier) }}
+                </p>
+                <p class="card-text">
+                    Discounted Price: ${{ "%.2f"|format((property.base_price * price_option.price_multiplier) * (1 - discount.discount_percentage / 100)) }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<a href="{{ url_for('price_selection', property_id=property.id) }}" class="btn btn-secondary mt-3">Back to Price Selection</a>
+{% endblock %}
