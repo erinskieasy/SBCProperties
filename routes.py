@@ -28,11 +28,18 @@ def price_selection(property_id):
 
     if request.method == 'POST':
         name = request.form.get('name')
-        price_multiplier = float(request.form.get('price_multiplier'))
-        new_option = PriceOption(name=name, price_multiplier=price_multiplier, property=property)
-        db.session.add(new_option)
-        db.session.commit()
-        flash('New price option added successfully!', 'success')
+        price_multiplier = request.form.get('price_multiplier')
+        if name and price_multiplier:
+            try:
+                price_multiplier = float(price_multiplier)
+                new_option = PriceOption(name=name, price_multiplier=price_multiplier, property=property)
+                db.session.add(new_option)
+                db.session.commit()
+                flash('New price option added successfully!', 'success')
+            except ValueError:
+                flash('Invalid price multiplier. Please enter a valid number.', 'error')
+        else:
+            flash('Please fill in all required fields.', 'error')
         return redirect(url_for('price_selection', property_id=property_id))
 
     return render_template('price_selection.html', property=property, price_options=price_options)
@@ -51,11 +58,18 @@ def view_discounts(property_id, price_option_id):
     
     if request.method == 'POST':
         name = request.form.get('name')
-        discount_percentage = float(request.form.get('discount_percentage'))
-        new_discount = DiscountMethod(name=name, discount_percentage=discount_percentage)
-        db.session.add(new_discount)
-        db.session.commit()
-        flash('New discount added successfully!', 'success')
+        discount_percentage = request.form.get('discount_percentage')
+        if name and discount_percentage:
+            try:
+                discount_percentage = float(discount_percentage)
+                new_discount = DiscountMethod(name=name, discount_percentage=discount_percentage)
+                db.session.add(new_discount)
+                db.session.commit()
+                flash('New discount added successfully!', 'success')
+            except ValueError:
+                flash('Invalid discount percentage. Please enter a valid number.', 'error')
+        else:
+            flash('Please fill in all required fields.', 'error')
         return redirect(url_for('view_discounts', property_id=property_id, price_option_id=price_option_id))
     
     discount_methods = DiscountMethod.query.all()
@@ -80,39 +94,63 @@ def final_price():
 @app.route('/add_property', methods=['GET', 'POST'])
 def add_property():
     if request.method == 'POST':
-        new_property = Property()
-        new_property.name = request.form['name']
-        new_property.description = request.form['description']
-        new_property.base_price = float(request.form['base_price'])
-        new_property.bedrooms = int(request.form['bedrooms']) if request.form['bedrooms'] else None
-        new_property.bathrooms = float(request.form['bathrooms']) if request.form['bathrooms'] else None
-        new_property.area = float(request.form['area']) if request.form['area'] else None
-        new_property.amenities = request.form['amenities']
-        
-        # Handle main image upload
-        if 'image' in request.files:
-            file = request.files['image']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                new_property.image_url = filename
-        
-        db.session.add(new_property)
-        db.session.commit()
-        
-        # Handle gallery image uploads
-        if 'gallery_images' in request.files:
-            gallery_files = request.files.getlist('gallery_images')
-            for file in gallery_files:
+        name = request.form.get('name')
+        description = request.form.get('description')
+        base_price = request.form.get('base_price')
+        bedrooms = request.form.get('bedrooms')
+        bathrooms = request.form.get('bathrooms')
+        area = request.form.get('area')
+        amenities = request.form.get('amenities')
+
+        if not all([name, description, base_price]):
+            flash('Please fill in all required fields.', 'error')
+            return redirect(url_for('add_property'))
+
+        try:
+            new_property = Property(
+                name=name,
+                description=description,
+                base_price=float(base_price),
+                bedrooms=int(bedrooms) if bedrooms else None,
+                bathrooms=float(bathrooms) if bathrooms else None,
+                area=float(area) if area else None,
+                amenities=amenities
+            )
+
+            # Handle main image upload
+            if 'image' in request.files:
+                file = request.files['image']
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    new_gallery_image = GalleryImage(image_url=filename, property=new_property)
-                    db.session.add(new_gallery_image)
-        
-        db.session.commit()
-        flash('New property added successfully!', 'success')
-        return redirect(url_for('manage_properties'))
+                    new_property.image_url = filename
+                else:
+                    flash('Invalid file type for main image. Please upload a valid image file.', 'error')
+                    return redirect(url_for('add_property'))
+            else:
+                flash('Main image is required.', 'error')
+                return redirect(url_for('add_property'))
+
+            db.session.add(new_property)
+            db.session.commit()
+
+            # Handle gallery image uploads
+            if 'gallery_images' in request.files:
+                gallery_files = request.files.getlist('gallery_images')
+                for file in gallery_files:
+                    if file and allowed_file(file.filename):
+                        filename = secure_filename(file.filename)
+                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                        new_gallery_image = GalleryImage(image_url=filename, property=new_property)
+                        db.session.add(new_gallery_image)
+
+            db.session.commit()
+            flash('New property added successfully!', 'success')
+            return redirect(url_for('manage_properties'))
+        except ValueError:
+            flash('Invalid input. Please check your entries and try again.', 'error')
+            return redirect(url_for('add_property'))
+
     return render_template('add_property.html')
 
 @app.route('/manage_properties')
