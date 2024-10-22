@@ -5,7 +5,7 @@ from app import app, db
 from models import Property, PriceOption, DiscountMethod, GalleryImage
 
 # Configure upload settings
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -97,23 +97,15 @@ def add_property():
     if request.method == 'POST':
         try:
             app.logger.info("Received add_property POST request")
-            
-            # Check if UPLOAD_FOLDER exists, if not create it
-            if not os.path.exists(app.config['UPLOAD_FOLDER']):
-                os.makedirs(app.config['UPLOAD_FOLDER'])
-                app.logger.info(f"Created UPLOAD_FOLDER: {app.config['UPLOAD_FOLDER']}")
 
-            # Log received form data (exclude file data)
             form_data = {k: v for k, v in request.form.items() if k != 'image'}
             app.logger.info(f"Received form data: {form_data}")
 
-            # Validate required fields
             required_fields = ['name', 'description', 'base_price']
             for field in required_fields:
                 if not request.form.get(field):
                     raise ValueError(f"Missing required field: {field}")
 
-            # Validate and process form data
             name = request.form['name']
             description = request.form['description']
             base_price = float(request.form['base_price'])
@@ -122,7 +114,6 @@ def add_property():
             area = float(request.form['area']) if request.form.get('area') else None
             amenities = request.form.get('amenities')
 
-            # Validate file upload
             if 'image' not in request.files:
                 raise ValueError("No image file uploaded")
             
@@ -133,13 +124,15 @@ def add_property():
             if not allowed_file(file.filename):
                 raise ValueError("Invalid file type for main image")
 
-            # Process file upload
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
-            app.logger.info(f"Saved main image: {file_path}")
+            try:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                app.logger.info(f"Saved main image: {file_path}")
+            except Exception as e:
+                app.logger.error(f"Failed to save file {filename}: {str(e)}")
+                raise ValueError(f"Failed to save uploaded file: {str(e)}")
 
-            # Create new property
             new_property = Property(
                 name=name,
                 description=description,
@@ -152,18 +145,24 @@ def add_property():
             )
             db.session.add(new_property)
 
-            # Process gallery images
             if 'gallery_images' in request.files:
                 gallery_files = request.files.getlist('gallery_images')
                 for gfile in gallery_files:
                     if gfile and allowed_file(gfile.filename):
-                        gfilename = secure_filename(gfile.filename)
-                        gfile_path = os.path.join(app.config['UPLOAD_FOLDER'], gfilename)
-                        gfile.save(gfile_path)
-                        app.logger.info(f"Saved gallery image: {gfile_path}")
-                        new_gallery_image = GalleryImage(image_url=gfilename)
-                        new_gallery_image.property = new_property
-                        db.session.add(new_gallery_image)
+                        try:
+                            gfilename = secure_filename(gfile.filename)
+                            gfile_path = os.path.join(app.config['UPLOAD_FOLDER'], gfilename)
+                            gfile.save(gfile_path)
+                            app.logger.info(f"Saved gallery image: {gfile_path}")
+                            
+                            new_gallery_image = GalleryImage(
+                                image_url=gfilename,
+                                property=new_property
+                            )
+                            db.session.add(new_gallery_image)
+                        except Exception as e:
+                            app.logger.error(f"Failed to save gallery image {gfilename}: {str(e)}")
+                            raise ValueError(f"Failed to save gallery image: {str(e)}")
 
             db.session.commit()
             app.logger.info("Successfully added new property to database")
