@@ -96,8 +96,16 @@ def final_price():
 def add_property():
     if request.method == 'POST':
         try:
+            app.logger.info("Received add_property POST request")
+            
+            # Check if UPLOAD_FOLDER exists, if not create it
+            if not os.path.exists(app.config['UPLOAD_FOLDER']):
+                os.makedirs(app.config['UPLOAD_FOLDER'])
+                app.logger.info(f"Created UPLOAD_FOLDER: {app.config['UPLOAD_FOLDER']}")
+
             # Log received form data (exclude file data)
-            app.logger.info(f"Received form data: {request.form}")
+            form_data = {k: v for k, v in request.form.items() if k != 'image'}
+            app.logger.info(f"Received form data: {form_data}")
 
             # Validate required fields
             required_fields = ['name', 'description', 'base_price']
@@ -108,7 +116,7 @@ def add_property():
             # Validate and process form data
             name = request.form['name']
             description = request.form['description']
-            base_price = float(request.form['base_price'])  # Validate as float
+            base_price = float(request.form['base_price'])
             bedrooms = int(request.form['bedrooms']) if request.form.get('bedrooms') else None
             bathrooms = float(request.form['bathrooms']) if request.form.get('bathrooms') else None
             area = float(request.form['area']) if request.form.get('area') else None
@@ -125,10 +133,13 @@ def add_property():
             if not allowed_file(file.filename):
                 raise ValueError("Invalid file type for main image")
 
-            # Process file upload and create new property
+            # Process file upload
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
+            app.logger.info(f"Saved main image: {file_path}")
 
+            # Create new property
             new_property = Property(
                 name=name,
                 description=description,
@@ -147,12 +158,15 @@ def add_property():
                 for gfile in gallery_files:
                     if gfile and allowed_file(gfile.filename):
                         gfilename = secure_filename(gfile.filename)
-                        gfile.save(os.path.join(app.config['UPLOAD_FOLDER'], gfilename))
+                        gfile_path = os.path.join(app.config['UPLOAD_FOLDER'], gfilename)
+                        gfile.save(gfile_path)
+                        app.logger.info(f"Saved gallery image: {gfile_path}")
                         new_gallery_image = GalleryImage(image_url=gfilename)
                         new_gallery_image.property = new_property
                         db.session.add(new_gallery_image)
 
             db.session.commit()
+            app.logger.info("Successfully added new property to database")
             flash('New property added successfully!', 'success')
             return redirect(url_for('manage_properties'))
 
