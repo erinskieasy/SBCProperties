@@ -103,6 +103,14 @@ def initialize_properties():
             setattr(new_property, key, value)
         db.session.add(new_property)
 
+        # Add gallery images for each property
+        gallery_images = [
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_1.jpg", property=new_property),
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_2.jpg", property=new_property),
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_3.jpg", property=new_property)
+        ]
+        db.session.add_all(gallery_images)
+
     db.session.commit()
     flash('Properties have been initialized successfully!', 'success')
     return redirect(url_for('property_selection'))

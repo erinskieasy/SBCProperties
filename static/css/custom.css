@@ -10,11 +10,6 @@
 
 .price-option-card, .discount-method-card {
     cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.price-option-card:hover, .discount-method-card:hover {
-    transform: scale(1.05);
 }
 
 .selected {
@@ -25,4 +20,18 @@
     .property-card {
         margin-bottom: 1rem;
     }
+}
+
+/* New styles for hover animations */
+.property-card,
+.price-option-card,
+.discount-method-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.property-card:hover,
+.price-option-card:hover,
+.discount-method-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
