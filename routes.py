@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, send_from_directory
 from app import app, db
-from models import Property, PriceOption, DiscountMethod
+from models import Property, PriceOption, DiscountMethod, GalleryImage
 import os
 
 @app.route('/')
@@ -48,12 +48,16 @@ def final_price():
 @app.route('/add_property', methods=['GET', 'POST'])
 def add_property():
     if request.method == 'POST':
-        new_property = Property(
-            name=request.form['name'],
-            description=request.form['description'],
-            image_url=request.form['image_url'],
-            base_price=float(request.form['base_price'])
-        )
+        new_property = Property()
+        new_property.name = request.form['name']
+        new_property.description = request.form['description']
+        new_property.image_url = request.form['image_url']
+        new_property.base_price = float(request.form['base_price'])
+        new_property.bedrooms = int(request.form['bedrooms']) if request.form['bedrooms'] else None
+        new_property.bathrooms = float(request.form['bathrooms']) if request.form['bathrooms'] else None
+        new_property.area = float(request.form['area']) if request.form['area'] else None
+        new_property.amenities = request.form['amenities']
+        
         db.session.add(new_property)
         db.session.commit()
         flash('New property added successfully!', 'success')
@@ -73,6 +77,12 @@ def remove_property(property_id):
     flash('Property removed successfully!', 'success')
     return redirect(url_for('manage_properties'))
 
+@app.route('/property_gallery/<int:property_id>')
+def property_gallery(property_id):
+    property = Property.query.get_or_404(property_id)
+    gallery_images = GalleryImage.query.filter_by(property_id=property_id).all()
+    return render_template('property_gallery.html', property=property, gallery_images=gallery_images)
+
 @app.route('/initialize_properties')
 def initialize_properties():
     # Check if properties already exist
@@ -80,15 +90,18 @@ def initialize_properties():
         flash('Properties have already been initialized.', 'info')
         return redirect(url_for('property_selection'))
 
-    # Add the three properties with correct image_url
+    # Add the three properties with correct image_url and additional details
     properties = [
-        Property(name="Tropical Resort", description="Tropical resort with bicycle rentals", image_url="384207928.jpg", base_price=250),
-        Property(name="Luxury Villa", description="Luxury villa with private pool", image_url="387887682.jpg", base_price=500),
-        Property(name="Beachfront Property", description="Modern beachfront property with twin pools", image_url="474497619.jpg", base_price=450)
+        {"name": "Tropical Resort", "description": "Tropical resort with bicycle rentals", "image_url": "384207928.jpg", "base_price": 250, "bedrooms": 2, "bathrooms": 2.5, "area": 1500, "amenities": "Pool, Bicycle rentals"},
+        {"name": "Luxury Villa", "description": "Luxury villa with private pool", "image_url": "387887682.jpg", "base_price": 500, "bedrooms": 4, "bathrooms": 3.5, "area": 3000, "amenities": "Private pool, Garden"},
+        {"name": "Beachfront Property", "description": "Modern beachfront property with twin pools", "image_url": "474497619.jpg", "base_price": 450, "bedrooms": 3, "bathrooms": 3, "area": 2000, "amenities": "Twin pools, Beach access"}
     ]
 
-    for prop in properties:
-        db.session.add(prop)
+    for prop_data in properties:
+        new_property = Property()
+        for key, value in prop_data.items():
+            setattr(new_property, key, value)
+        db.session.add(new_property)
 
     db.session.commit()
     flash('Properties have been initialized successfully!', 'success')

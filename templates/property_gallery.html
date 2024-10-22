@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ property.name }} Gallery{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{{ property.name }} Gallery</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <img src="{{ url_for('static', filename='images/' + property.image_url) }}" class="img-fluid mb-3" alt="{{ property.name }}">
+        <h3>Property Details</h3>
+        <p>{{ property.description }}</p>
+        <p><strong>Base Price:</strong> ${{ "%.2f"|format(property.base_price) }}</p>
+        <p><strong>Bedrooms:</strong> {{ property.bedrooms }}</p>
+        <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+        <p><strong>Area:</strong> {{ property.area }} sq ft</p>
+        <p><strong>Amenities:</strong> {{ property.amenities }}</p>
+    </div>
+    <div class="col-md-6">
+        <h3>Gallery Images</h3>
+        {% if gallery_images %}
+            <div class="row">
+                {% for image in gallery_images %}
+                    <div class="col-md-4 mb-3">
+                        <img src="{{ url_for('static', filename='images/' + image.image_url) }}" class="img-fluid" alt="Gallery image">
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No additional gallery images available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<a href="{{ url_for('property_selection') }}" class="btn btn-primary mt-3">Back to Property Selection</a>
+{% endblock %}

@@ -13,6 +13,19 @@
                 <h5 class="card-title">{{ property.name }}</h5>
                 <p class="card-text">{{ property.description }}</p>
                 <p class="card-text"><strong>Base Price: ${{ "%.2f"|format(property.base_price) }}</strong></p>
+                {% if property.bedrooms %}
+                    <p class="card-text">Bedrooms: {{ property.bedrooms }}</p>
+                {% endif %}
+                {% if property.bathrooms %}
+                    <p class="card-text">Bathrooms: {{ property.bathrooms }}</p>
+                {% endif %}
+                {% if property.area %}
+                    <p class="card-text">Area: {{ property.area }} sq ft</p>
+                {% endif %}
+                {% if property.amenities %}
+                    <p class="card-text">Amenities: {{ property.amenities }}</p>
+                {% endif %}
+                <a href="{{ url_for('property_gallery', property_id=property.id) }}" class="btn btn-secondary mt-2">View Gallery</a>
             </div>
         </div>
     </div>
