@@ -28,4 +28,15 @@ document.addEventListener('DOMContentLoaded', function() {
             propertyContainer.scrollLeft = scrollLeft - walk;
         });
     }
+
+    // Add event listeners for property card clicks
+    const propertyCards = document.querySelectorAll('.property-card');
+    propertyCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('a')) {
+                const propertyId = this.dataset.propertyId;
+                window.location.href = `/price_selection/${propertyId}`;
+            }
+        });
+    });
 });
