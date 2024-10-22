@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2 class="mb-4">Add New Property</h2>
-<form action="{{ url_for('add_property') }}" method="post">
+<form action="{{ url_for('add_property') }}" method="post" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="name" class="form-label">Property Name</label>
         <input type="text" class="form-control" id="name" name="name" required>
@@ -14,12 +14,32 @@
         <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
     </div>
     <div class="mb-3">
-        <label for="image_url" class="form-label">Image URL</label>
-        <input type="url" class="form-control" id="image_url" name="image_url" required>
+        <label for="image" class="form-label">Main Image</label>
+        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+    </div>
+    <div class="mb-3">
+        <label for="gallery_images" class="form-label">Gallery Images</label>
+        <input type="file" class="form-control" id="gallery_images" name="gallery_images" accept="image/*" multiple>
     </div>
     <div class="mb-3">
         <label for="base_price" class="form-label">Base Price</label>
         <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" required>
+    </div>
+    <div class="mb-3">
+        <label for="bedrooms" class="form-label">Bedrooms</label>
+        <input type="number" class="form-control" id="bedrooms" name="bedrooms">
+    </div>
+    <div class="mb-3">
+        <label for="bathrooms" class="form-label">Bathrooms</label>
+        <input type="number" class="form-control" id="bathrooms" name="bathrooms" step="0.5">
+    </div>
+    <div class="mb-3">
+        <label for="area" class="form-label">Area (sq ft)</label>
+        <input type="number" class="form-control" id="area" name="area" step="0.01">
+    </div>
+    <div class="mb-3">
+        <label for="amenities" class="form-label">Amenities</label>
+        <input type="text" class="form-control" id="amenities" name="amenities">
     </div>
     <button type="submit" class="btn btn-primary">Add Property</button>
 </form>

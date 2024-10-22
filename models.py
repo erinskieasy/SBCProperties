@@ -10,7 +10,7 @@ class Property(db.Model):
     bathrooms = db.Column(db.Float, nullable=True)
     area = db.Column(db.Float, nullable=True)
     amenities = db.Column(db.Text, nullable=True)
-    gallery_images = db.relationship('GalleryImage', backref='property', lazy=True)
+    gallery_images = db.relationship('GalleryImage', backref='property', lazy=True, cascade="all, delete-orphan")
     price_options = db.relationship('PriceOption', backref='property', lazy=True)
 
 class GalleryImage(db.Model):

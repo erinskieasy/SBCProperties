@@ -1,6 +1,16 @@
+import os
 from flask import render_template, request, redirect, url_for, flash
+from werkzeug.utils import secure_filename
 from app import app, db
 from models import Property, PriceOption, DiscountMethod, GalleryImage
+
+# Configure upload settings
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
@@ -73,14 +83,33 @@ def add_property():
         new_property = Property()
         new_property.name = request.form['name']
         new_property.description = request.form['description']
-        new_property.image_url = request.form['image_url']
         new_property.base_price = float(request.form['base_price'])
         new_property.bedrooms = int(request.form['bedrooms']) if request.form['bedrooms'] else None
         new_property.bathrooms = float(request.form['bathrooms']) if request.form['bathrooms'] else None
         new_property.area = float(request.form['area']) if request.form['area'] else None
         new_property.amenities = request.form['amenities']
         
+        # Handle main image upload
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                new_property.image_url = filename
+        
         db.session.add(new_property)
+        db.session.commit()
+        
+        # Handle gallery image uploads
+        if 'gallery_images' in request.files:
+            gallery_files = request.files.getlist('gallery_images')
+            for file in gallery_files:
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    new_gallery_image = GalleryImage(image_url=filename, property=new_property)
+                    db.session.add(new_gallery_image)
+        
         db.session.commit()
         flash('New property added successfully!', 'success')
         return redirect(url_for('manage_properties'))
