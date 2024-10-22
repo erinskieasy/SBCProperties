@@ -8,7 +8,7 @@
     {% for property in properties %}
     <div class="col-12 col-md-4 mb-4">
         <div class="card property-card h-100" data-property-id="{{ property.id }}">
-            <img src="{{ property.image_url }}" class="card-img-top property-image" alt="{{ property.name }}">
+            <img src="{{ url_for('static', filename=property.image_url) }}" class="card-img-top property-image" alt="{{ property.name }}">
             <div class="card-body">
                 <h5 class="card-title">{{ property.name }}</h5>
                 <p class="card-text">{{ property.description }}</p>

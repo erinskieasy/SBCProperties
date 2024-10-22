@@ -67,3 +67,24 @@ def remove_property(property_id):
     db.session.commit()
     flash('Property removed successfully!', 'success')
     return redirect(url_for('manage_properties'))
+
+@app.route('/initialize_properties')
+def initialize_properties():
+    # Check if properties already exist
+    if Property.query.count() > 0:
+        flash('Properties have already been initialized.', 'info')
+        return redirect(url_for('property_selection'))
+
+    # Add the three properties
+    properties = [
+        Property(name="Tropical Resort", description="Tropical resort with bicycle rentals", image_url="474497619.jpg", base_price=250),
+        Property(name="Luxury Villa", description="Luxury villa with private pool", image_url="387887682.jpg", base_price=500),
+        Property(name="Beachfront Property", description="Modern beachfront property with twin pools", image_url="384207928.jpg", base_price=450)
+    ]
+
+    for prop in properties:
+        db.session.add(prop)
+
+    db.session.commit()
+    flash('Properties have been initialized successfully!', 'success')
+    return redirect(url_for('property_selection'))
