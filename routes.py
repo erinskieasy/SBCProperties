@@ -114,3 +114,39 @@ def initialize_properties():
     db.session.commit()
     flash('Properties have been initialized successfully!', 'success')
     return redirect(url_for('property_selection'))
+
+@app.route('/initialize_price_options_and_discounts')
+def initialize_price_options_and_discounts():
+    # Check if price options and discount methods already exist
+    if PriceOption.query.count() > 0 or DiscountMethod.query.count() > 0:
+        flash('Price options and discount methods have already been initialized.', 'info')
+        return redirect(url_for('property_selection'))
+
+    # Add price options for each property
+    properties = Property.query.all()
+    price_options = [
+        {"name": "Standard", "price_multiplier": 1.0},
+        {"name": "Premium", "price_multiplier": 1.2},
+        {"name": "Deluxe", "price_multiplier": 1.5}
+    ]
+
+    for property in properties:
+        for option in price_options:
+            new_option = PriceOption(name=option["name"], price_multiplier=option["price_multiplier"], property=property)
+            db.session.add(new_option)
+
+    # Add discount methods
+    discount_methods = [
+        {"name": "No Discount", "discount_percentage": 0},
+        {"name": "Early Bird", "discount_percentage": 10},
+        {"name": "Last Minute", "discount_percentage": 15},
+        {"name": "Loyalty Program", "discount_percentage": 20}
+    ]
+
+    for method in discount_methods:
+        new_method = DiscountMethod(name=method["name"], discount_percentage=method["discount_percentage"])
+        db.session.add(new_method)
+
+    db.session.commit()
+    flash('Price options and discount methods have been initialized successfully!', 'success')
+    return redirect(url_for('property_selection'))

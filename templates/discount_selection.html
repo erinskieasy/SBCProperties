@@ -4,6 +4,8 @@
 
 {% block content %}
 <h2 class="mb-4">Select a Discount Method</h2>
+<h3>Selected Property: {{ property.name }}</h3>
+<h4>Selected Price Option: {{ price_option.name }}</h4>
 <form id="discount-form" action="{{ url_for('final_price') }}" method="post">
     <input type="hidden" name="property_id" value="{{ property.id }}">
     <input type="hidden" name="price_option_id" value="{{ price_option.id }}">
@@ -15,11 +17,12 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ method.name }}</h5>
                     <p class="card-text">Discount: {{ method.discount_percentage }}%</p>
+                    <button type="submit" class="btn btn-primary" onclick="document.getElementById('discount_method_id').value='{{ method.id }}'">Select</button>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Calculate Final Price</button>
 </form>
+<a href="{{ url_for('price_selection', property_id=property.id) }}" class="btn btn-secondary mt-3">Back to Price Selection</a>
 {% endblock %}

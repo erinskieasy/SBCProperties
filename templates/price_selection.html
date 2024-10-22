@@ -6,14 +6,16 @@
 <h2 class="mb-4">Select a Price Option for {{ property.name }}</h2>
 <div class="row">
     {% for option in price_options %}
-    <div class="col-md-3 mb-4">
+    <div class="col-md-4 mb-4">
         <div class="card price-option-card" data-property-id="{{ property.id }}" data-price-option-id="{{ option.id }}">
             <div class="card-body">
                 <h5 class="card-title">{{ option.name }}</h5>
                 <p class="card-text">Price: ${{ "%.2f"|format(property.base_price * option.price_multiplier) }}</p>
+                <a href="{{ url_for('discount_selection', property_id=property.id, price_option_id=option.id) }}" class="btn btn-primary">Select</a>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
+<a href="{{ url_for('property_selection') }}" class="btn btn-secondary mt-3">Back to Property Selection</a>
 {% endblock %}

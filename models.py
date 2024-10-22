@@ -11,6 +11,7 @@ class Property(db.Model):
     area = db.Column(db.Float, nullable=True)
     amenities = db.Column(db.Text, nullable=True)
     gallery_images = db.relationship('GalleryImage', backref='property', lazy=True)
+    price_options = db.relationship('PriceOption', backref='property', lazy=True)
 
 class GalleryImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,9 +20,9 @@ class GalleryImage(db.Model):
 
 class PriceOption(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    property_id = db.Column(db.Integer, db.ForeignKey('property.id'), nullable=False)
     name = db.Column(db.String(50), nullable=False)
     price_multiplier = db.Column(db.Float, nullable=False)
+    property_id = db.Column(db.Integer, db.ForeignKey('property.id'), nullable=False)
 
 class DiscountMethod(db.Model):
     id = db.Column(db.Integer, primary_key=True)
