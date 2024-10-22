@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, send_from_directory
 from app import app, db
 from models import Property, PriceOption, DiscountMethod
+import os
 
 @app.route('/')
 def index():
@@ -10,6 +11,10 @@ def index():
 def property_selection():
     properties = Property.query.all()
     return render_template('property_selection.html', properties=properties)
+
+@app.route('/static/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), filename)
 
 @app.route('/price_selection/<int:property_id>')
 def price_selection(property_id):
@@ -75,11 +80,11 @@ def initialize_properties():
         flash('Properties have already been initialized.', 'info')
         return redirect(url_for('property_selection'))
 
-    # Add the three properties
+    # Add the three properties with correct image_url
     properties = [
-        Property(name="Tropical Resort", description="Tropical resort with bicycle rentals", image_url="474497619.jpg", base_price=250),
+        Property(name="Tropical Resort", description="Tropical resort with bicycle rentals", image_url="384207928.jpg", base_price=250),
         Property(name="Luxury Villa", description="Luxury villa with private pool", image_url="387887682.jpg", base_price=500),
-        Property(name="Beachfront Property", description="Modern beachfront property with twin pools", image_url="384207928.jpg", base_price=450)
+        Property(name="Beachfront Property", description="Modern beachfront property with twin pools", image_url="474497619.jpg", base_price=450)
     ]
 
     for prop in properties:
