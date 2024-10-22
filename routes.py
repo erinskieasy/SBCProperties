@@ -34,10 +34,20 @@ def discount_selection(property_id, price_option_id):
     discount_methods = DiscountMethod.query.all()
     return render_template('discount_selection.html', property=property, price_option=price_option, discount_methods=discount_methods)
 
-@app.route('/view_discounts/<int:property_id>/<int:price_option_id>')
+@app.route('/view_discounts/<int:property_id>/<int:price_option_id>', methods=['GET', 'POST'])
 def view_discounts(property_id, price_option_id):
     property = Property.query.get_or_404(property_id)
     price_option = PriceOption.query.get_or_404(price_option_id)
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        discount_percentage = float(request.form.get('discount_percentage'))
+        new_discount = DiscountMethod(name=name, discount_percentage=discount_percentage)
+        db.session.add(new_discount)
+        db.session.commit()
+        flash('New discount added successfully!', 'success')
+        return redirect(url_for('view_discounts', property_id=property_id, price_option_id=price_option_id))
+    
     discount_methods = DiscountMethod.query.all()
     return render_template('view_discounts.html', property=property, price_option=price_option, discount_methods=discount_methods)
 

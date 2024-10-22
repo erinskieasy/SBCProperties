@@ -5,6 +5,20 @@
 {% block content %}
 <h2 class="mb-4">Discounts for {{ property.name }} - {{ price_option.name }}</h2>
 
+<!-- Add new discount form -->
+<form action="{{ url_for('view_discounts', property_id=property.id, price_option_id=price_option.id) }}" method="post" class="mb-4">
+    <h3>Add New Discount</h3>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="discount_percentage">Discount Percentage:</label>
+        <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" step="0.1" min="0" max="100" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Discount</button>
+</form>
+
 <div class="row">
     {% for discount in discount_methods %}
     <div class="col-md-4 mb-4">
