@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Select a Discount Method{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Select a Discount Method</h2>
+<form id="discount-form" action="{{ url_for('final_price') }}" method="post">
+    <input type="hidden" name="property_id" value="{{ property.id }}">
+    <input type="hidden" name="price_option_id" value="{{ price_option.id }}">
+    <input type="hidden" name="discount_method_id" id="discount_method_id" value="">
+    <div class="row">
+        {% for method in discount_methods %}
+        <div class="col-md-3 mb-4">
+            <div class="card discount-method-card" data-discount-method-id="{{ method.id }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ method.name }}</h5>
+                    <p class="card-text">Discount: {{ method.discount_percentage }}%</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Calculate Final Price</button>
+</form>
+{% endblock %}

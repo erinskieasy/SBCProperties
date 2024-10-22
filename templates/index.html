@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Property Selection{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to Property Selection</h1>
+    <p class="lead">Find your perfect property with our easy-to-use selection process.</p>
+    <hr class="my-4">
+    <p>Start by selecting a property, then choose your preferred price option and discount method.</p>
+    <a class="btn btn-primary btn-lg" href="{{ url_for('property_selection') }}" role="button">Start Selection</a>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Property{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Add New Property</h2>
+<form action="{{ url_for('add_property') }}" method="post">
+    <div class="mb-3">
+        <label for="name" class="form-label">Property Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="image_url" class="form-label">Image URL</label>
+        <input type="url" class="form-control" id="image_url" name="image_url" required>
+    </div>
+    <div class="mb-3">
+        <label for="base_price" class="form-label">Base Price</label>
+        <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Property</button>
+</form>
+{% endblock %}

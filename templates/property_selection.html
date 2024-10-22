@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Select a Property{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Select a Property</h2>
+<div class="property-container d-flex flex-nowrap overflow-auto">
+    {% for property in properties %}
+    <div class="col-12 col-md-4 mb-4">
+        <div class="card property-card h-100" data-property-id="{{ property.id }}">
+            <img src="{{ property.image_url }}" class="card-img-top property-image" alt="{{ property.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ property.name }}</h5>
+                <p class="card-text">{{ property.description }}</p>
+                <p class="card-text"><strong>Base Price: ${{ "%.2f"|format(property.base_price) }}</strong></p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

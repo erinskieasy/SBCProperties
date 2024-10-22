@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Properties{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Manage Properties</h2>
+<a href="{{ url_for('add_property') }}" class="btn btn-success mb-3">Add New Property</a>
+<div class="row">
+    {% for property in properties %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <img src="{{ property.image_url }}" class="card-img-top property-image" alt="{{ property.name }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ property.name }}</h5>
+                <p class="card-text">{{ property.description }}</p>
+                <p class="card-text"><strong>Base Price: ${{ "%.2f"|format(property.base_price) }}</strong></p>
+                <form action="{{ url_for('remove_property', property_id=property.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to remove this property?')">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

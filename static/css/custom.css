@@ -1,0 +1,28 @@
+/* Custom styles to complement Bootstrap */
+.property-card {
+    height: 100%;
+}
+
+.property-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.price-option-card, .discount-method-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.price-option-card:hover, .discount-method-card:hover {
+    transform: scale(1.05);
+}
+
+.selected {
+    border: 2px solid var(--bs-primary);
+}
+
+@media (max-width: 768px) {
+    .property-card {
+        margin-bottom: 1rem;
+    }
+}

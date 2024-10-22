@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Final Price{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Final Price</h2>
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{ property.name }}</h5>
+        <p class="card-text">Price Option: {{ price_option.name }}</p>
+        <p class="card-text">Discount Method: {{ discount_method.name }}</p>
+        <h3 class="card-text">Final Price: ${{ "%.2f"|format(final_price) }}</h3>
+    </div>
+</div>
+<a href="{{ url_for('property_selection') }}" class="btn btn-primary mt-3">Start Over</a>
+{% endblock %}
