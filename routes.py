@@ -1,7 +1,6 @@
-from flask import render_template, request, redirect, url_for, flash, send_from_directory
+from flask import render_template, request, redirect, url_for, flash
 from app import app, db
 from models import Property, PriceOption, DiscountMethod, GalleryImage
-import os
 
 @app.route('/')
 def index():
@@ -11,10 +10,6 @@ def index():
 def property_selection():
     properties = Property.query.all()
     return render_template('property_selection.html', properties=properties)
-
-@app.route('/static/images/<path:filename>')
-def serve_image(filename):
-    return send_from_directory(os.path.join(app.root_path, 'static', 'images'), filename)
 
 @app.route('/price_selection/<int:property_id>')
 def price_selection(property_id):
@@ -125,26 +120,26 @@ def initialize_price_options_and_discounts():
     # Add price options for each property
     properties = Property.query.all()
     price_options = [
-        {"name": "Standard", "price_multiplier": 1.0},
-        {"name": "Premium", "price_multiplier": 1.2},
-        {"name": "Deluxe", "price_multiplier": 1.5}
+        {'name': 'Standard', 'price_multiplier': 1.0},
+        {'name': 'Premium', 'price_multiplier': 1.2},
+        {'name': 'Deluxe', 'price_multiplier': 1.5}
     ]
 
     for property in properties:
         for option in price_options:
-            new_option = PriceOption(name=option["name"], price_multiplier=option["price_multiplier"], property=property)
+            new_option = PriceOption(name=option['name'], price_multiplier=option['price_multiplier'], property=property)
             db.session.add(new_option)
 
     # Add discount methods
     discount_methods = [
-        {"name": "No Discount", "discount_percentage": 0},
-        {"name": "Early Bird", "discount_percentage": 10},
-        {"name": "Last Minute", "discount_percentage": 15},
-        {"name": "Loyalty Program", "discount_percentage": 20}
+        {'name': 'No Discount', 'discount_percentage': 0},
+        {'name': 'Early Bird', 'discount_percentage': 10},
+        {'name': 'Last Minute', 'discount_percentage': 15},
+        {'name': 'Loyalty Program', 'discount_percentage': 20}
     ]
 
     for method in discount_methods:
-        new_method = DiscountMethod(name=method["name"], discount_percentage=method["discount_percentage"])
+        new_method = DiscountMethod(name=method['name'], discount_percentage=method['discount_percentage'])
         db.session.add(new_method)
 
     db.session.commit()
