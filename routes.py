@@ -1,15 +1,12 @@
 import os
-from flask import render_template, request, redirect, url_for, flash, current_app
+from flask import render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from app import app, db
 from models import Property, PriceOption, DiscountMethod, GalleryImage
 
 # Configure upload settings
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'images')
+UPLOAD_FOLDER = 'static/images'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-# Ensure upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -44,7 +41,7 @@ def price_selection(property_id):
                 flash('Invalid price multiplier. Please enter a valid number.', 'error')
         else:
             flash('Please fill in all required fields.', 'error')
-        return redirect(url_for('price_selection', property_id=property_id, _external=True))
+        return redirect(url_for('price_selection', property_id=property_id))
 
     return render_template('price_selection.html', property=property, price_options=price_options)
 
@@ -74,7 +71,7 @@ def view_discounts(property_id, price_option_id):
                 flash('Invalid discount percentage. Please enter a valid number.', 'error')
         else:
             flash('Please fill in all required fields.', 'error')
-        return redirect(url_for('view_discounts', property_id=property_id, price_option_id=price_option_id, _external=True))
+        return redirect(url_for('view_discounts', property_id=property_id, price_option_id=price_option_id))
     
     discount_methods = DiscountMethod.query.all()
     return render_template('view_discounts.html', property=property, price_option=price_option, discount_methods=discount_methods)
@@ -99,12 +96,23 @@ def final_price():
 def add_property():
     if request.method == 'POST':
         try:
+            app.logger.info("Received add_property POST request")
+
             form_data = {k: v for k, v in request.form.items() if k != 'image'}
-            
+            app.logger.info(f"Received form data: {form_data}")
+
             required_fields = ['name', 'description', 'base_price']
             for field in required_fields:
                 if not request.form.get(field):
                     raise ValueError(f"Missing required field: {field}")
+
+            name = request.form['name']
+            description = request.form['description']
+            base_price = float(request.form['base_price'])
+            bedrooms = int(request.form['bedrooms']) if request.form.get('bedrooms') else None
+            bathrooms = float(request.form['bathrooms']) if request.form.get('bathrooms') else None
+            area = float(request.form['area']) if request.form.get('area') else None
+            amenities = request.form.get('amenities')
 
             if 'image' not in request.files:
                 raise ValueError("No image file uploaded")
@@ -116,19 +124,24 @@ def add_property():
             if not allowed_file(file.filename):
                 raise ValueError("Invalid file type for main image")
 
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
+            try:
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(file_path)
+                app.logger.info(f"Saved main image: {file_path}")
+            except Exception as e:
+                app.logger.error(f"Failed to save file {filename}: {str(e)}")
+                raise ValueError(f"Failed to save uploaded file: {str(e)}")
 
             new_property = Property(
-                name=request.form['name'],
-                description=request.form['description'],
+                name=name,
+                description=description,
                 image_url=filename,
-                base_price=float(request.form['base_price']),
-                bedrooms=int(request.form['bedrooms']) if request.form.get('bedrooms') else None,
-                bathrooms=float(request.form['bathrooms']) if request.form.get('bathrooms') else None,
-                area=float(request.form['area']) if request.form.get('area') else None,
-                amenities=request.form.get('amenities')
+                base_price=base_price,
+                bedrooms=bedrooms,
+                bathrooms=bathrooms,
+                area=area,
+                amenities=amenities
             )
             db.session.add(new_property)
 
@@ -136,25 +149,33 @@ def add_property():
                 gallery_files = request.files.getlist('gallery_images')
                 for gfile in gallery_files:
                     if gfile and allowed_file(gfile.filename):
-                        gfilename = secure_filename(gfile.filename)
-                        gfile_path = os.path.join(app.config['UPLOAD_FOLDER'], gfilename)
-                        gfile.save(gfile_path)
-                        
-                        new_gallery_image = GalleryImage(
-                            image_url=gfilename,
-                            property=new_property
-                        )
-                        db.session.add(new_gallery_image)
+                        try:
+                            gfilename = secure_filename(gfile.filename)
+                            gfile_path = os.path.join(app.config['UPLOAD_FOLDER'], gfilename)
+                            gfile.save(gfile_path)
+                            app.logger.info(f"Saved gallery image: {gfile_path}")
+                            
+                            new_gallery_image = GalleryImage(
+                                image_url=gfilename,
+                                property=new_property
+                            )
+                            db.session.add(new_gallery_image)
+                        except Exception as e:
+                            app.logger.error(f"Failed to save gallery image {gfilename}: {str(e)}")
+                            raise ValueError(f"Failed to save gallery image: {str(e)}")
 
             db.session.commit()
+            app.logger.info("Successfully added new property to database")
             flash('New property added successfully!', 'success')
-            return redirect(url_for('manage_properties', _external=True))
+            return redirect(url_for('manage_properties'))
 
         except ValueError as e:
             db.session.rollback()
+            app.logger.error(f"ValueError in add_property: {str(e)}")
             flash(f"Error: {str(e)}", 'error')
         except Exception as e:
             db.session.rollback()
+            app.logger.error(f"Unexpected error in add_property: {str(e)}")
             flash("An unexpected error occurred. Please try again.", 'error')
 
     return render_template('add_property.html')
@@ -170,7 +191,7 @@ def remove_property(property_id):
     db.session.delete(property)
     db.session.commit()
     flash('Property removed successfully!', 'success')
-    return redirect(url_for('manage_properties', _external=True))
+    return redirect(url_for('manage_properties'))
 
 @app.route('/property_gallery/<int:property_id>')
 def property_gallery(property_id):
@@ -182,7 +203,7 @@ def property_gallery(property_id):
 def initialize_properties():
     if Property.query.count() > 0:
         flash('Properties have already been initialized.', 'info')
-        return redirect(url_for('property_selection', _external=True))
+        return redirect(url_for('property_selection'))
 
     properties = [
         {"name": "Tropical Resort", "description": "Tropical resort with bicycle rentals", "image_url": "384207928.jpg", "base_price": 250, "bedrooms": 2, "bathrooms": 2.5, "area": 1500, "amenities": "Pool, Bicycle rentals"},
@@ -205,13 +226,13 @@ def initialize_properties():
 
     db.session.commit()
     flash('Properties have been initialized successfully!', 'success')
-    return redirect(url_for('property_selection', _external=True))
+    return redirect(url_for('property_selection'))
 
 @app.route('/initialize_price_options_and_discounts')
 def initialize_price_options_and_discounts():
     if PriceOption.query.count() > 0 or DiscountMethod.query.count() > 0:
         flash('Price options and discount methods have already been initialized.', 'info')
-        return redirect(url_for('property_selection', _external=True))
+        return redirect(url_for('property_selection'))
 
     properties = Property.query.all()
     price_options = [
@@ -239,7 +260,7 @@ def initialize_price_options_and_discounts():
 
     db.session.commit()
     flash('Price options and discount methods have been initialized successfully!', 'success')
-    return redirect(url_for('property_selection', _external=True))
+    return redirect(url_for('property_selection'))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
