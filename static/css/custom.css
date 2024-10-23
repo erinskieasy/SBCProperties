@@ -5,9 +5,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     touch-action: pan-y pinch-zoom;
-    transition: transform 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
     margin-bottom: 1rem;
     width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .property-image {
@@ -37,7 +38,7 @@
     width: 100%;
 }
 
-/* Desktop styles */
+/* Desktop styles with enhanced hover effects */
 @media (min-width: 768px) {
     .property-container {
         flex-direction: row;
@@ -45,6 +46,7 @@
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
     }
 
     .property-container::-webkit-scrollbar {
@@ -68,6 +70,34 @@
         max-width: none;
         scroll-snap-align: start;
         margin-bottom: 0;
+    }
+
+    /* Hover effects for desktop */
+    @media (hover: hover) {
+        .property-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .property-card:hover .card-title {
+            color: var(--bs-primary);
+        }
+
+        .property-card:hover .property-image {
+            filter: brightness(1.1);
+        }
+
+        .price-option-card:hover,
+        .discount-method-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
     }
 }
 
@@ -108,6 +138,7 @@
 .btn {
     padding: 0.5rem 1rem;
     font-size: 1rem;
+    transition: all 0.3s ease-in-out;
 }
 
 /* Navigation improvements for mobile */
@@ -132,6 +163,7 @@
 .card-title {
     font-size: 1.25rem;
     margin-bottom: 1rem;
+    transition: color 0.3s ease-in-out;
 }
 
 .card-text {
@@ -171,7 +203,7 @@
 /* Loading state for images */
 .property-image {
     background: var(--bs-secondary);
-    transition: opacity 0.3s;
+    transition: all 0.3s ease-in-out;
 }
 
 .property-image[src] {
