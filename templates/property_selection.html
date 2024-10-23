@@ -3,32 +3,42 @@
 {% block title %}Select a Property{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Select a Property</h2>
-<div class="property-container d-flex flex-nowrap overflow-auto">
-    {% for property in properties %}
-    <div class="col-12 col-md-4 mb-4">
-        <div class="card property-card h-100" data-property-id="{{ property.id }}">
-            <img src="{{ url_for('static', filename='images/' + property.image_url) }}" class="card-img-top property-image" alt="{{ property.name }}">
+<div class="container">
+    <h2 class="mb-4">Select a Property</h2>
+    <div class="property-container">
+        {% for property in properties %}
+        <div class="card property-card" data-property-id="{{ property.id }}">
+            <img src="{{ url_for('static', filename='images/' + property.image_url) }}" 
+                 class="card-img-top property-image" 
+                 alt="{{ property.name }}"
+                 loading="lazy">
             <div class="card-body">
                 <h5 class="card-title">{{ property.name }}</h5>
                 <p class="card-text">{{ property.description }}</p>
-                <p class="card-text"><strong>Base Price: ${{ "%.2f"|format(property.base_price) }}</strong></p>
-                {% if property.bedrooms %}
-                    <p class="card-text">Bedrooms: {{ property.bedrooms }}</p>
-                {% endif %}
-                {% if property.bathrooms %}
-                    <p class="card-text">Bathrooms: {{ property.bathrooms }}</p>
-                {% endif %}
-                {% if property.area %}
-                    <p class="card-text">Area: {{ property.area }} sq ft</p>
-                {% endif %}
+                <div class="property-details">
+                    <p class="card-text"><strong>Base Price:</strong> ${{ "%.2f"|format(property.base_price) }}</p>
+                    {% if property.bedrooms %}
+                        <p class="card-text"><i class="bi bi-house-door"></i> {{ property.bedrooms }} Bedrooms</p>
+                    {% endif %}
+                    {% if property.bathrooms %}
+                        <p class="card-text"><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bathrooms</p>
+                    {% endif %}
+                    {% if property.area %}
+                        <p class="card-text"><i class="bi bi-rulers"></i> {{ property.area }} sq ft</p>
+                    {% endif %}
+                </div>
                 {% if property.amenities %}
-                    <p class="card-text">Amenities: {{ property.amenities }}</p>
+                    <p class="card-text"><strong>Amenities:</strong> {{ property.amenities }}</p>
                 {% endif %}
-                <a href="{{ url_for('property_gallery', property_id=property.id) }}" class="btn btn-secondary mt-2">View Gallery</a>
+                <div class="mt-3">
+                    <a href="{{ url_for('property_gallery', property_id=property.id) }}" 
+                       class="btn btn-secondary w-100 mb-2">View Gallery</a>
+                    <a href="{{ url_for('price_selection', property_id=property.id) }}" 
+                       class="btn btn-primary w-100">Select Property</a>
+                </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

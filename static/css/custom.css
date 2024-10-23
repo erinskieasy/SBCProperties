@@ -6,18 +6,23 @@
     -moz-user-select: none;
     -ms-user-select: none;
     touch-action: pan-y pinch-zoom;
+    transition: transform 0.2s ease-in-out;
+    margin-bottom: 1rem;
 }
 
 .property-image {
     height: 200px;
     object-fit: cover;
     pointer-events: none;
+    width: 100%;
 }
 
 .price-option-card, .discount-method-card {
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+    transition: transform 0.2s;
+    margin-bottom: 1rem;
 }
 
 .selected {
@@ -26,33 +31,80 @@
 
 .property-container {
     display: flex;
+    flex-wrap: nowrap;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 1rem;
     padding: 1rem 0;
+    margin: 0 -0.5rem;
 }
 
-.property-container .col-12 {
-    flex: 0 0 auto;
-    width: 90%;
+.property-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.property-container::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+    border-radius: 4px;
+}
+
+.property-container::-webkit-scrollbar-thumb {
+    background: var(--bs-secondary);
+    border-radius: 4px;
+}
+
+.property-container .card {
     scroll-snap-align: start;
+    min-width: 300px;
+    max-width: 90vw;
 }
 
 @media (min-width: 768px) {
-    .property-container .col-12 {
-        width: calc(33.333% - 1rem);
+    .property-container .card {
+        min-width: 350px;
+        max-width: calc(33.333% - 1rem);
     }
 }
 
-/* Hover animations (only on non-touch devices) */
-@media (hover: hover) {
-    .property-card:hover,
-    .price-option-card:hover,
-    .discount-method-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+/* Form controls for better touch interaction */
+.form-control, .btn {
+    min-height: 44px; /* Minimum touch target size */
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    font-size: 1rem;
+}
+
+/* Navigation improvements for mobile */
+.navbar-toggler {
+    padding: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.navbar-nav {
+    padding: 0.5rem 0;
+}
+
+.nav-item {
+    margin: 0.25rem 0;
+}
+
+/* Card content spacing */
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.card-text {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
 }
 
 /* Touch-specific styles */
@@ -63,4 +115,34 @@
         transform: scale(0.98);
         transition: transform 0.1s;
     }
+    
+    .btn:active {
+        transform: scale(0.95);
+    }
+}
+
+/* Container padding adjustments for mobile */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    .property-image {
+        height: 180px;
+    }
+}
+
+/* Loading state for images */
+.property-image {
+    background: var(--bs-secondary);
+    transition: opacity 0.3s;
+}
+
+.property-image[src] {
+    background: none;
 }
