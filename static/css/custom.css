@@ -1,37 +1,66 @@
 /* Custom styles to complement Bootstrap */
 .property-card {
     height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: pan-y pinch-zoom;
 }
 
 .property-image {
     height: 200px;
     object-fit: cover;
+    pointer-events: none;
 }
 
 .price-option-card, .discount-method-card {
     cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .selected {
     border: 2px solid var(--bs-primary);
 }
 
-@media (max-width: 768px) {
-    .property-card {
-        margin-bottom: 1rem;
+.property-container {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.property-container .col-12 {
+    flex: 0 0 auto;
+    width: 90%;
+    scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+    .property-container .col-12 {
+        width: calc(33.333% - 1rem);
     }
 }
 
-/* New styles for hover animations */
-.property-card,
-.price-option-card,
-.discount-method-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+/* Hover animations (only on non-touch devices) */
+@media (hover: hover) {
+    .property-card:hover,
+    .price-option-card:hover,
+    .discount-method-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 }
 
-.property-card:hover,
-.price-option-card:hover,
-.discount-method-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+/* Touch-specific styles */
+@media (hover: none) {
+    .property-card:active,
+    .price-option-card:active,
+    .discount-method-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s;
+    }
 }
