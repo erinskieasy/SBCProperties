@@ -1,5 +1,5 @@
 import os
-from flask import render_template, request, redirect, url_for, flash, send_from_directory
+from flask import render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from app import app, db
 from models import Property, PriceOption, DiscountMethod, GalleryImage
@@ -14,8 +14,7 @@ def allowed_file(filename):
 
 @app.route('/')
 def index():
-    # For static deployment, serve the index.html from root directory
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html')
 
 @app.route('/property_selection')
 def property_selection():
@@ -199,3 +198,69 @@ def property_gallery(property_id):
     property = Property.query.get_or_404(property_id)
     gallery_images = GalleryImage.query.filter_by(property_id=property_id).all()
     return render_template('property_gallery.html', property=property, gallery_images=gallery_images)
+
+@app.route('/initialize_properties')
+def initialize_properties():
+    if Property.query.count() > 0:
+        flash('Properties have already been initialized.', 'info')
+        return redirect(url_for('property_selection'))
+
+    properties = [
+        {"name": "Tropical Resort", "description": "Tropical resort with bicycle rentals", "image_url": "384207928.jpg", "base_price": 250, "bedrooms": 2, "bathrooms": 2.5, "area": 1500, "amenities": "Pool, Bicycle rentals"},
+        {"name": "Luxury Villa", "description": "Luxury villa with private pool", "image_url": "387887682.jpg", "base_price": 500, "bedrooms": 4, "bathrooms": 3.5, "area": 3000, "amenities": "Private pool, Garden"},
+        {"name": "Beachfront Property", "description": "Modern beachfront property with twin pools", "image_url": "474497619.jpg", "base_price": 450, "bedrooms": 3, "bathrooms": 3, "area": 2000, "amenities": "Twin pools, Beach access"}
+    ]
+
+    for prop_data in properties:
+        new_property = Property(**prop_data)
+        db.session.add(new_property)
+
+        gallery_images = [
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_1.jpg"),
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_2.jpg"),
+            GalleryImage(image_url=f"{prop_data['image_url'][:-4]}_3.jpg")
+        ]
+        for gallery_image in gallery_images:
+            gallery_image.property = new_property
+            db.session.add(gallery_image)
+
+    db.session.commit()
+    flash('Properties have been initialized successfully!', 'success')
+    return redirect(url_for('property_selection'))
+
+@app.route('/initialize_price_options_and_discounts')
+def initialize_price_options_and_discounts():
+    if PriceOption.query.count() > 0 or DiscountMethod.query.count() > 0:
+        flash('Price options and discount methods have already been initialized.', 'info')
+        return redirect(url_for('property_selection'))
+
+    properties = Property.query.all()
+    price_options = [
+        {'name': 'Standard', 'price_multiplier': 1.0},
+        {'name': 'Premium', 'price_multiplier': 1.2},
+        {'name': 'Deluxe', 'price_multiplier': 1.5}
+    ]
+
+    for property in properties:
+        for option in price_options:
+            new_option = PriceOption(**option)
+            new_option.property = property
+            db.session.add(new_option)
+
+    discount_methods = [
+        {'name': 'No Discount', 'discount_percentage': 0},
+        {'name': 'Early Bird', 'discount_percentage': 10},
+        {'name': 'Last Minute', 'discount_percentage': 15},
+        {'name': 'Loyalty Program', 'discount_percentage': 20}
+    ]
+
+    for method in discount_methods:
+        new_method = DiscountMethod(**method)
+        db.session.add(new_method)
+
+    db.session.commit()
+    flash('Price options and discount methods have been initialized successfully!', 'success')
+    return redirect(url_for('property_selection'))
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
