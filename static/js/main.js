@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let touchStartY;
         let touchStartTime;
         let touchMoveDistance = 0;
-        const CLICK_THRESHOLD = 10; // pixels
-        const SWIPE_THRESHOLD = 50; // pixels
+        const CLICK_THRESHOLD = 15; // Increased threshold for better distinction
+        const TAP_DELAY = 300; // Maximum time in ms for a tap
 
         // Mouse events
         propertyContainer.addEventListener('mousedown', (e) => {
@@ -52,12 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const deltaX = touchStartX - currentX;
             const deltaY = touchStartY - currentY;
             
-            // Calculate total movement distance
             touchMoveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             
-            // Only prevent default if the movement is more horizontal than vertical
+            // Allow natural scrolling
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                e.preventDefault();
                 propertyContainer.scrollLeft = scrollLeft + deltaX;
             }
         });
@@ -73,19 +71,29 @@ document.addEventListener('DOMContentLoaded', function() {
     propertyCards.forEach(card => {
         let touchStartX;
         let touchStartY;
+        let touchStartTime;
         let moveDistance = 0;
+        let tapTimeout;
 
-        const handleCardInteraction = function(e) {
-            if (!e.target.closest('a') && moveDistance < CLICK_THRESHOLD) {
+        const handleCardInteraction = function(e, isTouchEvent = false) {
+            if (!e.target.closest('a')) {
                 const propertyId = this.dataset.propertyId;
-                window.location.href = `/price_selection/${propertyId}`;
+                if (!isTouchEvent || (moveDistance < CLICK_THRESHOLD && Date.now() - touchStartTime < TAP_DELAY)) {
+                    window.location.href = `/price_selection/${propertyId}`;
+                }
             }
         };
 
         card.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].pageX;
             touchStartY = e.touches[0].pageY;
+            touchStartTime = Date.now();
             moveDistance = 0;
+            
+            // Clear any existing tap timeout
+            if (tapTimeout) {
+                clearTimeout(tapTimeout);
+            }
         });
 
         card.addEventListener('touchmove', (e) => {
@@ -96,11 +104,18 @@ document.addEventListener('DOMContentLoaded', function() {
             moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         });
 
-        card.addEventListener('click', handleCardInteraction);
-        card.addEventListener('touchend', (e) => {
-            if (moveDistance < CLICK_THRESHOLD) {
-                handleCardInteraction.call(card, e);
-            }
+        card.addEventListener('click', function(e) {
+            handleCardInteraction.call(this, e, false);
+        });
+
+        card.addEventListener('touchend', function(e) {
+            // Add a small delay to ensure we don't trigger during scroll
+            tapTimeout = setTimeout(() => {
+                if (moveDistance < CLICK_THRESHOLD && Date.now() - touchStartTime < TAP_DELAY) {
+                    handleCardInteraction.call(this, e, true);
+                }
+            }, 50);
+            
             touchStartX = null;
             touchStartY = null;
         });
@@ -111,20 +126,29 @@ document.addEventListener('DOMContentLoaded', function() {
     priceOptionCards.forEach(card => {
         let touchStartX;
         let touchStartY;
+        let touchStartTime;
         let moveDistance = 0;
+        let tapTimeout;
 
-        const handleOptionInteraction = function(e) {
-            if (!e.target.closest('a') && moveDistance < CLICK_THRESHOLD) {
+        const handleOptionInteraction = function(e, isTouchEvent = false) {
+            if (!e.target.closest('a')) {
                 const propertyId = this.dataset.propertyId;
                 const priceOptionId = this.dataset.priceOptionId;
-                window.location.href = `/discount_selection/${propertyId}/${priceOptionId}`;
+                if (!isTouchEvent || (moveDistance < CLICK_THRESHOLD && Date.now() - touchStartTime < TAP_DELAY)) {
+                    window.location.href = `/discount_selection/${propertyId}/${priceOptionId}`;
+                }
             }
         };
 
         card.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].pageX;
             touchStartY = e.touches[0].pageY;
+            touchStartTime = Date.now();
             moveDistance = 0;
+
+            if (tapTimeout) {
+                clearTimeout(tapTimeout);
+            }
         });
 
         card.addEventListener('touchmove', (e) => {
@@ -135,11 +159,17 @@ document.addEventListener('DOMContentLoaded', function() {
             moveDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         });
 
-        card.addEventListener('click', handleOptionInteraction);
-        card.addEventListener('touchend', (e) => {
-            if (moveDistance < CLICK_THRESHOLD) {
-                handleOptionInteraction.call(card, e);
-            }
+        card.addEventListener('click', function(e) {
+            handleOptionInteraction.call(this, e, false);
+        });
+
+        card.addEventListener('touchend', function(e) {
+            tapTimeout = setTimeout(() => {
+                if (moveDistance < CLICK_THRESHOLD && Date.now() - touchStartTime < TAP_DELAY) {
+                    handleOptionInteraction.call(this, e, true);
+                }
+            }, 50);
+            
             touchStartX = null;
             touchStartY = null;
         });
@@ -151,12 +181,17 @@ document.addEventListener('DOMContentLoaded', function() {
             let touchStartX;
             let touchStartY;
             let moveDistance = 0;
+            let touchStartTime;
 
             element.addEventListener('touchstart', (e) => {
                 touchStartX = e.touches[0].pageX;
                 touchStartY = e.touches[0].pageY;
+                touchStartTime = Date.now();
                 moveDistance = 0;
-                element.style.opacity = '0.7';
+                
+                if (moveDistance < CLICK_THRESHOLD) {
+                    element.style.opacity = '0.7';
+                }
             });
 
             element.addEventListener('touchmove', (e) => {
