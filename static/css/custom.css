@@ -1,6 +1,5 @@
 /* Custom styles to complement Bootstrap */
 .property-card {
-    height: 100%;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -8,6 +7,7 @@
     touch-action: pan-y pinch-zoom;
     transition: transform 0.2s ease-in-out;
     margin-bottom: 1rem;
+    width: 100%;
 }
 
 .property-image {
@@ -31,50 +31,82 @@
 
 .property-container {
     display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
     gap: 1rem;
     padding: 1rem 0;
-    margin: 0 -0.5rem;
+    width: 100%;
 }
 
-.property-container::-webkit-scrollbar {
-    height: 8px;
-}
-
-.property-container::-webkit-scrollbar-track {
-    background: var(--bs-dark);
-    border-radius: 4px;
-}
-
-.property-container::-webkit-scrollbar-thumb {
-    background: var(--bs-secondary);
-    border-radius: 4px;
-}
-
-.property-container .card {
-    scroll-snap-align: start;
-    min-width: 300px;
-    max-width: 90vw;
-}
-
+/* Desktop styles */
 @media (min-width: 768px) {
-    .property-container .card {
-        min-width: 350px;
-        max-width: calc(33.333% - 1rem);
+    .property-container {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .property-container::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .property-container::-webkit-scrollbar-track {
+        background: var(--bs-dark);
+        border-radius: 4px;
+    }
+
+    .property-container::-webkit-scrollbar-thumb {
+        background: var(--bs-secondary);
+        border-radius: 4px;
+    }
+
+    .property-card {
+        flex: 0 0 auto;
+        width: calc(33.333% - 1rem);
+        min-width: 300px;
+        max-width: none;
+        scroll-snap-align: start;
+        margin-bottom: 0;
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+    .property-container {
+        flex-direction: column;
+        overflow-x: visible;
+        margin: 0;
+        padding: 0;
+    }
+
+    .property-card {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .property-image {
+        height: 180px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
 }
 
 /* Form controls for better touch interaction */
 .form-control, .btn {
-    min-height: 44px; /* Minimum touch target size */
+    min-height: 44px;
 }
 
 .btn {
     padding: 0.5rem 1rem;
-    margin: 0.25rem;
     font-size: 1rem;
 }
 
@@ -122,18 +154,17 @@
 }
 
 /* Container padding adjustments for mobile */
-@media (max-width: 768px) {
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
+@media (max-width: 767px) {
     h2 {
         font-size: 1.75rem;
+        margin-bottom: 1rem;
+        padding: 0 0.75rem;
     }
-    
-    .property-image {
-        height: 180px;
+
+    .property-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.5rem;
     }
 }
 
