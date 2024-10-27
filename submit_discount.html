@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Discount</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <main class="container py-4">
+        <div id="flash-messages"></div>
+        <div class="text-center">
+            <h2>Processing your request...</h2>
+            <p>Please wait while we add the new discount.</p>
+        </div>
+    </main>
+    <script>
+        // Get form data from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const discountPercentage = urlParams.get('discount_percentage');
+
+        // Add discount to localStorage
+        const discounts = JSON.parse(localStorage.getItem('discounts') || '[]');
+        const newDiscount = {
+            id: Date.now(), // Use timestamp as a simple unique ID
+            name: name,
+            discount_percentage: parseFloat(discountPercentage)
+        };
+        discounts.push(newDiscount);
+        localStorage.setItem('discounts', JSON.stringify(discounts));
+
+        // Show success message and redirect
+        const flashMessages = document.getElementById('flash-messages');
+        flashMessages.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                New discount added successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        // Redirect back to view discounts page
+        setTimeout(() => {
+            window.location.href = '/view_discounts.html';
+        }, 1500);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
