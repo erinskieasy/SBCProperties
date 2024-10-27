@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Select a Price Option{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Select a Price Option for {{ property.name }}</h2>
+
+<!-- Add new price option form -->
+<form action="{{ url_for('price_selection', property_id=property.id) }}" method="post" class="mb-4">
+    <h3>Add New Price Option</h3>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+        <label for="price_multiplier">Price Multiplier:</label>
+        <input type="number" class="form-control" id="price_multiplier" name="price_multiplier" step="0.01" min="0" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Price Option</button>
+</form>
+
+<div class="row">
+    {% for option in price_options %}
+    <div class="col-md-4 mb-4">
+        <div class="card price-option-card" data-property-id="{{ property.id }}" data-price-option-id="{{ option.id }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ option.name }}</h5>
+                <p class="card-text">Price: ${{ "%.2f"|format(property.base_price * option.price_multiplier) }}</p>
+                <a href="{{ url_for('discount_selection', property_id=property.id, price_option_id=option.id) }}" class="btn btn-primary">Select</a>
+                <a href="{{ url_for('view_discounts', property_id=property.id, price_option_id=option.id) }}" class="btn btn-secondary">View Discounts</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<a href="{{ url_for('property_selection') }}" class="btn btn-secondary mt-3">Back to Property Selection</a>
+{% endblock %}
