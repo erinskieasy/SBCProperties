@@ -40,7 +40,6 @@
         <div id="flash-messages"></div>
         <div class="row">
             <div class="col-md-6">
-                <!-- Main property image and details will be loaded dynamically via JavaScript -->
                 <img id="mainPropertyImage" class="img-fluid mb-3" alt="Property Image">
                 <h3>Property Details</h3>
                 <div id="propertyDetails">
@@ -115,6 +114,8 @@
         const property = properties[propertyId];
 
         if (property) {
+            document.title = `${property.name} Gallery`;
+            
             // Update main image and details
             document.getElementById('mainPropertyImage').src = property.mainImage;
             document.getElementById('mainPropertyImage').alt = property.name;
@@ -136,6 +137,9 @@
                 </div>
             `).join('');
             document.getElementById('galleryImages').innerHTML = galleryHTML;
+        } else {
+            // Handle invalid property ID
+            document.getElementById('propertyDetails').innerHTML = '<p class="text-danger">Property not found</p>';
         }
     </script>
 </body>
