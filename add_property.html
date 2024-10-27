@@ -39,7 +39,7 @@
     <main class="container py-4">
         <div id="flash-messages"></div>
         <h2 class="mb-4">Add New Property</h2>
-        <form action="/submit_property.html" method="post" enctype="multipart/form-data">
+        <form action="/submit_property.html" method="post" enctype="multipart/form-data" class="mb-4">
             <div class="mb-3">
                 <label for="name" class="form-label">Property Name</label>
                 <input type="text" class="form-control" id="name" name="name" required>
@@ -51,30 +51,33 @@
             <div class="mb-3">
                 <label for="image" class="form-label">Main Image</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                <div class="form-text">Upload a main image for the property (JPG, PNG, or GIF)</div>
             </div>
             <div class="mb-3">
                 <label for="gallery_images" class="form-label">Gallery Images</label>
                 <input type="file" class="form-control" id="gallery_images" name="gallery_images" accept="image/*" multiple>
+                <div class="form-text">Select multiple images for the property gallery (optional)</div>
             </div>
             <div class="mb-3">
-                <label for="base_price" class="form-label">Base Price</label>
-                <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" required>
+                <label for="base_price" class="form-label">Base Price ($)</label>
+                <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" min="0" required>
             </div>
             <div class="mb-3">
                 <label for="bedrooms" class="form-label">Bedrooms</label>
-                <input type="number" class="form-control" id="bedrooms" name="bedrooms">
+                <input type="number" class="form-control" id="bedrooms" name="bedrooms" min="0">
             </div>
             <div class="mb-3">
                 <label for="bathrooms" class="form-label">Bathrooms</label>
-                <input type="number" class="form-control" id="bathrooms" name="bathrooms" step="0.5">
+                <input type="number" class="form-control" id="bathrooms" name="bathrooms" step="0.5" min="0">
             </div>
             <div class="mb-3">
                 <label for="area" class="form-label">Area (sq ft)</label>
-                <input type="number" class="form-control" id="area" name="area" step="0.01">
+                <input type="number" class="form-control" id="area" name="area" step="0.01" min="0">
             </div>
             <div class="mb-3">
                 <label for="amenities" class="form-label">Amenities</label>
                 <input type="text" class="form-control" id="amenities" name="amenities">
+                <div class="form-text">Enter amenities separated by commas (e.g., Pool, Garden, Beach access)</div>
             </div>
             <button type="submit" class="btn btn-primary">Add Property</button>
             <a href="/manage_properties.html" class="btn btn-secondary">Cancel</a>
@@ -83,5 +86,28 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/main.js"></script>
+    <script>
+        // Add client-side image validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const mainImage = document.getElementById('image').files[0];
+            const galleryImages = document.getElementById('gallery_images').files;
+            
+            // Validate main image
+            if (mainImage && !['image/jpeg', 'image/png', 'image/gif'].includes(mainImage.type)) {
+                e.preventDefault();
+                alert('Please select a valid image file (JPG, PNG, or GIF) for the main image.');
+                return;
+            }
+            
+            // Validate gallery images
+            for (let i = 0; i < galleryImages.length; i++) {
+                if (!['image/jpeg', 'image/png', 'image/gif'].includes(galleryImages[i].type)) {
+                    e.preventDefault();
+                    alert('Please select valid image files (JPG, PNG, or GIF) for the gallery.');
+                    return;
+                }
+            }
+        });
+    </script>
 </body>
 </html>
