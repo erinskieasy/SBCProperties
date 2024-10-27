@@ -1,37 +1,100 @@
-{% extends "base.html" %}
-
-{% block title %}Select a Price Option{% endblock %}
-
-{% block content %}
-<h2 class="mb-4">Select a Price Option for {{ property.name }}</h2>
-
-<!-- Add new price option form -->
-<form action="{{ url_for('price_selection', property_id=property.id) }}" method="post" class="mb-4">
-    <h3>Add New Price Option</h3>
-    <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-    </div>
-    <div class="form-group">
-        <label for="price_multiplier">Price Multiplier:</label>
-        <input type="number" class="form-control" id="price_multiplier" name="price_multiplier" step="0.01" min="0" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Add Price Option</button>
-</form>
-
-<div class="row">
-    {% for option in price_options %}
-    <div class="col-md-4 mb-4">
-        <div class="card price-option-card" data-property-id="{{ property.id }}" data-price-option-id="{{ option.id }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ option.name }}</h5>
-                <p class="card-text">Price: ${{ "%.2f"|format(property.base_price * option.price_multiplier) }}</p>
-                <a href="{{ url_for('discount_selection', property_id=property.id, price_option_id=option.id) }}" class="btn btn-primary">Select</a>
-                <a href="{{ url_for('view_discounts', property_id=property.id, price_option_id=option.id) }}" class="btn btn-secondary">View Discounts</a>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Price Option</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <i class="bi bi-houses"></i> Property Selection
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/property_selection.html">
+                            <i class="bi bi-search"></i> Select Property
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage_properties.html">
+                            <i class="bi bi-gear"></i> Manage Properties
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
-    {% endfor %}
-</div>
-<a href="{{ url_for('property_selection') }}" class="btn btn-secondary mt-3">Back to Property Selection</a>
-{% endblock %}
+    </nav>
+
+    <main class="container py-4">
+        <div id="flash-messages"></div>
+        <h2 class="mb-4">Select a Price Option</h2>
+
+        <!-- Add new price option form -->
+        <form action="/add_price_option.html" method="post" class="mb-4">
+            <h3>Add New Price Option</h3>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="price_multiplier">Price Multiplier:</label>
+                <input type="number" class="form-control" id="price_multiplier" name="price_multiplier" step="0.01" min="0" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Price Option</button>
+        </form>
+
+        <div class="row">
+            <!-- Standard Option -->
+            <div class="col-md-4 mb-4">
+                <div class="card price-option-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Standard</h5>
+                        <p class="card-text">Price: $250.00</p>
+                        <a href="/discount_selection.html?option=standard" class="btn btn-primary">Select</a>
+                        <a href="/view_discounts.html?option=standard" class="btn btn-secondary">View Discounts</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Option -->
+            <div class="col-md-4 mb-4">
+                <div class="card price-option-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Premium</h5>
+                        <p class="card-text">Price: $300.00</p>
+                        <a href="/discount_selection.html?option=premium" class="btn btn-primary">Select</a>
+                        <a href="/view_discounts.html?option=premium" class="btn btn-secondary">View Discounts</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deluxe Option -->
+            <div class="col-md-4 mb-4">
+                <div class="card price-option-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Deluxe</h5>
+                        <p class="card-text">Price: $375.00</p>
+                        <a href="/discount_selection.html?option=deluxe" class="btn btn-primary">Select</a>
+                        <a href="/view_discounts.html?option=deluxe" class="btn btn-secondary">View Discounts</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="/property_selection.html" class="btn btn-secondary mt-3">Back to Property Selection</a>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

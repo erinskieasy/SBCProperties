@@ -1,44 +1,125 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Property</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <i class="bi bi-houses"></i> Property Selection
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/property_selection.html">
+                            <i class="bi bi-search"></i> Select Property
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage_properties.html">
+                            <i class="bi bi-gear"></i> Manage Properties
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-{% block title %}Select a Property{% endblock %}
-
-{% block content %}
-<div class="container">
-    <h2 class="mb-4">Select a Property</h2>
-    <div class="property-container">
-        {% for property in properties %}
-        <div class="card property-card" data-property-id="{{ property.id }}">
-            <img src="{{ url_for('static', filename='images/' + property.image_url) }}" 
-                 class="card-img-top property-image" 
-                 alt="{{ property.name }}"
-                 loading="lazy">
-            <div class="card-body">
-                <h5 class="card-title">{{ property.name }}</h5>
-                <p class="card-text">{{ property.description }}</p>
-                <div class="property-details">
-                    <p class="card-text"><strong>Base Price:</strong> ${{ "%.2f"|format(property.base_price) }}</p>
-                    {% if property.bedrooms %}
-                        <p class="card-text"><i class="bi bi-house-door"></i> {{ property.bedrooms }} Bedrooms</p>
-                    {% endif %}
-                    {% if property.bathrooms %}
-                        <p class="card-text"><i class="bi bi-droplet"></i> {{ property.bathrooms }} Bathrooms</p>
-                    {% endif %}
-                    {% if property.area %}
-                        <p class="card-text"><i class="bi bi-rulers"></i> {{ property.area }} sq ft</p>
-                    {% endif %}
+    <main class="container py-4">
+        <div id="flash-messages"></div>
+        <div class="container">
+            <h2 class="mb-4">Select a Property</h2>
+            <div class="property-container">
+                <!-- Tropical Resort -->
+                <div class="card property-card" data-property-id="1">
+                    <img src="/static/images/384207928.jpg" 
+                         class="card-img-top property-image" 
+                         alt="Tropical Resort"
+                         loading="lazy">
+                    <div class="card-body">
+                        <h5 class="card-title">Tropical Resort</h5>
+                        <p class="card-text">Tropical resort with bicycle rentals</p>
+                        <div class="property-details">
+                            <p class="card-text"><strong>Base Price:</strong> $250.00</p>
+                            <p class="card-text"><i class="bi bi-house-door"></i> 2 Bedrooms</p>
+                            <p class="card-text"><i class="bi bi-droplet"></i> 2.5 Bathrooms</p>
+                            <p class="card-text"><i class="bi bi-rulers"></i> 1500 sq ft</p>
+                        </div>
+                        <p class="card-text"><strong>Amenities:</strong> Pool, Bicycle rentals</p>
+                        <div class="mt-3">
+                            <a href="/property_gallery.html?id=1" 
+                               class="btn btn-secondary w-100 mb-2">View Gallery</a>
+                            <a href="/price_selection.html?property_id=1" 
+                               class="btn btn-primary w-100">Select Property</a>
+                        </div>
+                    </div>
                 </div>
-                {% if property.amenities %}
-                    <p class="card-text"><strong>Amenities:</strong> {{ property.amenities }}</p>
-                {% endif %}
-                <div class="mt-3">
-                    <a href="{{ url_for('property_gallery', property_id=property.id) }}" 
-                       class="btn btn-secondary w-100 mb-2">View Gallery</a>
-                    <a href="{{ url_for('price_selection', property_id=property.id) }}" 
-                       class="btn btn-primary w-100">Select Property</a>
+
+                <!-- Luxury Villa -->
+                <div class="card property-card" data-property-id="2">
+                    <img src="/static/images/387887682.jpg" 
+                         class="card-img-top property-image" 
+                         alt="Luxury Villa"
+                         loading="lazy">
+                    <div class="card-body">
+                        <h5 class="card-title">Luxury Villa</h5>
+                        <p class="card-text">Luxury villa with private pool</p>
+                        <div class="property-details">
+                            <p class="card-text"><strong>Base Price:</strong> $500.00</p>
+                            <p class="card-text"><i class="bi bi-house-door"></i> 4 Bedrooms</p>
+                            <p class="card-text"><i class="bi bi-droplet"></i> 3.5 Bathrooms</p>
+                            <p class="card-text"><i class="bi bi-rulers"></i> 3000 sq ft</p>
+                        </div>
+                        <p class="card-text"><strong>Amenities:</strong> Private pool, Garden</p>
+                        <div class="mt-3">
+                            <a href="/property_gallery.html?id=2" 
+                               class="btn btn-secondary w-100 mb-2">View Gallery</a>
+                            <a href="/price_selection.html?property_id=2" 
+                               class="btn btn-primary w-100">Select Property</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Beachfront Property -->
+                <div class="card property-card" data-property-id="3">
+                    <img src="/static/images/474497619.jpg" 
+                         class="card-img-top property-image" 
+                         alt="Beachfront Property"
+                         loading="lazy">
+                    <div class="card-body">
+                        <h5 class="card-title">Beachfront Property</h5>
+                        <p class="card-text">Modern beachfront property with twin pools</p>
+                        <div class="property-details">
+                            <p class="card-text"><strong>Base Price:</strong> $450.00</p>
+                            <p class="card-text"><i class="bi bi-house-door"></i> 3 Bedrooms</p>
+                            <p class="card-text"><i class="bi bi-droplet"></i> 3 Bathrooms</p>
+                            <p class="card-text"><i class="bi bi-rulers"></i> 2000 sq ft</p>
+                        </div>
+                        <p class="card-text"><strong>Amenities:</strong> Twin pools, Beach access</p>
+                        <div class="mt-3">
+                            <a href="/property_gallery.html?id=3" 
+                               class="btn btn-secondary w-100 mb-2">View Gallery</a>
+                            <a href="/price_selection.html?property_id=3" 
+                               class="btn btn-primary w-100">Select Property</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
