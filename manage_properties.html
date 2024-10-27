@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Properties</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <i class="bi bi-houses"></i> Property Selection
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/property_selection.html">
+                            <i class="bi bi-search"></i> Select Property
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage_properties.html">
+                            <i class="bi bi-gear"></i> Manage Properties
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div id="flash-messages"></div>
+        <h2 class="mb-4">Manage Properties</h2>
+        <a href="/add_property.html" class="btn btn-success mb-3">Add New Property</a>
+        <div class="row">
+            <!-- Tropical Resort -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="/static/images/384207928.jpg" class="card-img-top property-image" alt="Tropical Resort">
+                    <div class="card-body">
+                        <h5 class="card-title">Tropical Resort</h5>
+                        <p class="card-text">Tropical resort with bicycle rentals</p>
+                        <p class="card-text"><strong>Base Price: $250.00</strong></p>
+                        <form action="/remove_property.html" method="post" onsubmit="return confirm('Are you sure you want to remove this property?')">
+                            <input type="hidden" name="property_id" value="1">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luxury Villa -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="/static/images/387887682.jpg" class="card-img-top property-image" alt="Luxury Villa">
+                    <div class="card-body">
+                        <h5 class="card-title">Luxury Villa</h5>
+                        <p class="card-text">Luxury villa with private pool</p>
+                        <p class="card-text"><strong>Base Price: $500.00</strong></p>
+                        <form action="/remove_property.html" method="post" onsubmit="return confirm('Are you sure you want to remove this property?')">
+                            <input type="hidden" name="property_id" value="2">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beachfront Property -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="/static/images/474497619.jpg" class="card-img-top property-image" alt="Beachfront Property">
+                    <div class="card-body">
+                        <h5 class="card-title">Beachfront Property</h5>
+                        <p class="card-text">Modern beachfront property with twin pools</p>
+                        <p class="card-text"><strong>Base Price: $450.00</strong></p>
+                        <form action="/remove_property.html" method="post" onsubmit="return confirm('Are you sure you want to remove this property?')">
+                            <input type="hidden" name="property_id" value="3">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
