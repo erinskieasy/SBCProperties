@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Property</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <i class="bi bi-houses"></i> Property Selection
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/property_selection.html">
+                            <i class="bi bi-search"></i> Select Property
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manage_properties.html">
+                            <i class="bi bi-gear"></i> Manage Properties
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <div id="flash-messages"></div>
+        <h2 class="mb-4">Add New Property</h2>
+        <form action="/submit_property.html" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">Property Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Main Image</label>
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label for="gallery_images" class="form-label">Gallery Images</label>
+                <input type="file" class="form-control" id="gallery_images" name="gallery_images" accept="image/*" multiple>
+            </div>
+            <div class="mb-3">
+                <label for="base_price" class="form-label">Base Price</label>
+                <input type="number" class="form-control" id="base_price" name="base_price" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="bedrooms" class="form-label">Bedrooms</label>
+                <input type="number" class="form-control" id="bedrooms" name="bedrooms">
+            </div>
+            <div class="mb-3">
+                <label for="bathrooms" class="form-label">Bathrooms</label>
+                <input type="number" class="form-control" id="bathrooms" name="bathrooms" step="0.5">
+            </div>
+            <div class="mb-3">
+                <label for="area" class="form-label">Area (sq ft)</label>
+                <input type="number" class="form-control" id="area" name="area" step="0.01">
+            </div>
+            <div class="mb-3">
+                <label for="amenities" class="form-label">Amenities</label>
+                <input type="text" class="form-control" id="amenities" name="amenities">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Property</button>
+            <a href="/manage_properties.html" class="btn btn-secondary">Cancel</a>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
