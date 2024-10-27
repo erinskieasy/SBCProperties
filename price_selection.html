@@ -39,62 +39,103 @@
     <main class="container py-4">
         <div id="flash-messages"></div>
         <h2 class="mb-4">Select a Price Option</h2>
+        <div id="propertyInfo" class="mb-4">
+            <!-- Property info will be loaded dynamically -->
+        </div>
 
         <!-- Add new price option form -->
-        <form action="/add_price_option.html" method="post" class="mb-4">
+        <form action="/submit_price_option.html" method="get" class="mb-4">
+            <input type="hidden" id="property_id" name="property_id">
             <h3>Add New Price Option</h3>
-            <div class="form-group">
-                <label for="name">Name:</label>
+            <div class="form-group mb-3">
+                <label for="name" class="form-label">Name:</label>
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
-            <div class="form-group">
-                <label for="price_multiplier">Price Multiplier:</label>
+            <div class="form-group mb-3">
+                <label for="price_multiplier" class="form-label">Price Multiplier:</label>
                 <input type="number" class="form-control" id="price_multiplier" name="price_multiplier" step="0.01" min="0" required>
+                <div class="form-text">Enter a multiplier value (e.g., 1.0 for standard price, 1.2 for 20% increase)</div>
             </div>
             <button type="submit" class="btn btn-primary">Add Price Option</button>
         </form>
 
-        <div class="row">
-            <!-- Standard Option -->
-            <div class="col-md-4 mb-4">
-                <div class="card price-option-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Standard</h5>
-                        <p class="card-text">Price: $250.00</p>
-                        <a href="/discount_selection.html?option=standard" class="btn btn-primary">Select</a>
-                        <a href="/view_discounts.html?option=standard" class="btn btn-secondary">View Discounts</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Premium Option -->
-            <div class="col-md-4 mb-4">
-                <div class="card price-option-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Premium</h5>
-                        <p class="card-text">Price: $300.00</p>
-                        <a href="/discount_selection.html?option=premium" class="btn btn-primary">Select</a>
-                        <a href="/view_discounts.html?option=premium" class="btn btn-secondary">View Discounts</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Deluxe Option -->
-            <div class="col-md-4 mb-4">
-                <div class="card price-option-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Deluxe</h5>
-                        <p class="card-text">Price: $375.00</p>
-                        <a href="/discount_selection.html?option=deluxe" class="btn btn-primary">Select</a>
-                        <a href="/view_discounts.html?option=deluxe" class="btn btn-secondary">View Discounts</a>
-                    </div>
-                </div>
-            </div>
+        <div id="priceOptions" class="row">
+            <!-- Price options will be loaded dynamically -->
         </div>
         <a href="/property_selection.html" class="btn btn-secondary mt-3">Back to Property Selection</a>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/main.js"></script>
+    <script>
+        // Properties data
+        const properties = {
+            "1": {
+                name: "Tropical Resort",
+                description: "Tropical resort with bicycle rentals",
+                basePrice: 250.00
+            },
+            "2": {
+                name: "Luxury Villa",
+                description: "Luxury villa with private pool",
+                basePrice: 500.00
+            },
+            "3": {
+                name: "Beachfront Property",
+                description: "Modern beachfront property with twin pools",
+                basePrice: 450.00
+            }
+        };
+
+        // Get property ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const propertyId = urlParams.get('property_id');
+        const property = properties[propertyId];
+
+        if (property) {
+            // Set hidden property_id in form
+            document.getElementById('property_id').value = propertyId;
+
+            // Display property info
+            document.getElementById('propertyInfo').innerHTML = `
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">${property.name}</h4>
+                        <p class="card-text">${property.description}</p>
+                        <p class="card-text"><strong>Base Price:</strong> $${property.basePrice.toFixed(2)}</p>
+                    </div>
+                </div>
+            `;
+
+            // Load and display price options
+            const priceOptions = JSON.parse(localStorage.getItem('priceOptions') || '[]');
+            const propertyPriceOptions = priceOptions.filter(option => option.property_id === parseInt(propertyId));
+            
+            const priceOptionsHTML = propertyPriceOptions.map(option => `
+                <div class="col-md-4 mb-4">
+                    <div class="card price-option-card">
+                        <div class="card-body">
+                            <h5 class="card-title">${option.name}</h5>
+                            <p class="card-text">Price: $${(property.basePrice * option.price_multiplier).toFixed(2)}</p>
+                            <a href="/discount_selection.html?property_id=${propertyId}&price_option_id=${option.id}" 
+                               class="btn btn-primary">Select</a>
+                            <a href="/view_discounts.html?property_id=${propertyId}&price_option_id=${option.id}" 
+                               class="btn btn-secondary">View Discounts</a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('priceOptions').innerHTML = priceOptionsHTML || `
+                <div class="col">
+                    <p class="text-muted">No price options available. Add one using the form above.</p>
+                </div>
+            `;
+        } else {
+            document.getElementById('propertyInfo').innerHTML = `
+                <div class="alert alert-danger">Property not found</div>
+            `;
+        }
+    </script>
 </body>
 </html>
